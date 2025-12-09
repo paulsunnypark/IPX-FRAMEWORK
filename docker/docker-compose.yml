@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: ipx-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../public:/var/www/html/public:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - php
+    networks:
+      - ipx-network
+    restart: unless-stopped
+
+  php:
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    container_name: ipx-php
+    volumes:
+      - ../:/var/www/html
+      - ./php/php.ini:/usr/local/etc/php/php.ini:ro
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - ipx-network
+    restart: unless-stopped
+    working_dir: /var/www/html
+
+  mysql:
+    image: mysql:8.0
+    container_name: ipx-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_DATABASE:-ipx_framework}
+      MYSQL_USER: ${DB_USERNAME:-ipx_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-ipx_password}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - ipx-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: ipx-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ipx-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+networks:
+  ipx-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  redis_data:
+

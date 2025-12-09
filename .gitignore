@@ -1,0 +1,78 @@
+# ----------------------------------------------------------------------
+# 1. IDE & OS System Files (개발 도구 및 운영체제 임시 파일)
+# ----------------------------------------------------------------------
+.idea
+.vscode
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+*.log
+
+# ----------------------------------------------------------------------
+# 2. Docker & Infrastructure (인프라 관련 데이터 및 로컬 설정)
+# ----------------------------------------------------------------------
+# DB 및 Redis 데이터가 로컬에 저장될 경우를 대비해 제외 (보안/용량 문제)
+/docker/mariadb/data/
+/docker/redis/data/
+# Docker 로그 파일
+/docker/logs/
+
+# ----------------------------------------------------------------------
+# 3. Monorepo - Backend (Laravel) 공통 규칙
+# apps/ 폴더 아래의 모든 Laravel 프로젝트에 적용됩니다.
+# ----------------------------------------------------------------------
+apps/*/vendor/
+apps/*/node_modules/
+apps/*/.env
+apps/*/.env.backup
+apps/*/.env.production
+apps/*/.phpunit.result.cache
+apps/*/auth.json
+
+# Laravel Storage & Cache (서버에서 생성되는 파일들)
+apps/*/storage/*.key
+apps/*/storage/logs/
+apps/*/storage/framework/cache/data/
+apps/*/storage/framework/sessions/
+apps/*/storage/framework/testing/
+apps/*/storage/framework/views/
+apps/*/storage/app/public/
+apps/*/public/storage
+
+# Laravel Debug Tools
+apps/*/.php_cs
+apps/*/.php_cs.cache
+apps/*/tinker
+
+# ----------------------------------------------------------------------
+# 4. Monorepo - Frontend (Vue.js/Vite) 공통 규칙
+# ----------------------------------------------------------------------
+apps/*/public/build/
+apps/*/public/hot
+apps/*/npm-debug.log
+apps/*/yarn-error.log
+apps/*/yarn.lock
+# package-lock.json은 팀 정책에 따라 커밋하기도 하지만,
+# Monorepo에서는 루트에서 관리하거나 충돌 방지를 위해 제외하기도 합니다.
+# 일반적으로는 포함시키는 것이 좋으나, 라이브러리 충돌이 잦다면 제외하세요.
+# apps/*/package-lock.json
+
+# ----------------------------------------------------------------------
+# 5. IPX-Framework Specific (프로젝트 특화 데이터)
+# ----------------------------------------------------------------------
+# 녹취 및 미디어 파일 (절대 커밋 금지)
+*.wav
+*.mp3
+*.pcm
+*.aac
+*.zip
+*.tar.gz
+
+# 로컬 테스트용 임시 녹취 데이터 폴더
+apps/*/storage/app/recordings/
+apps/*/storage/app/temp/
+
+# 데모 데이터 임포트 시 생성될 수 있는 로그나 임시 파일
+import_logs/

@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # 1. Web Server (Nginx) - Port 8890
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: ipx-nginx
+    ports:
+      - "8890:80"    # 프론트엔드 포트 (기존 VR 시스템 8888과 충돌 방지)
+      - "443:443"
+    volumes:
+      - ./:/var/www/html:ro  # 전체 디렉토리 마운트 (Nginx가 apps/ipx-vr/public 접근 가능)
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - php
+    networks:
+      - ipx-network
+    restart: unless-stopped
+
+  # 2. PHP App (Laravel + FPM)
+  php:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    container_name: ipx-php
+    volumes:
+      - ./:/var/www/html  # 전체 소스는 Windows 폴더 사용 (수정 가능)
+      # 데모 데이터 마운트
+      - D:\IPX-Storage\FILES\VR_REC:/var/www/recordings_root
+      # 권한 에러가 나는 폴더들만 도커 볼륨(Linux FS)으로 덮어쓰기
+      - ipx_vr_storage:/var/www/html/apps/ipx-vr/storage
+      - ipx_vr_bootstrap_cache:/var/www/html/apps/ipx-vr/bootstrap/cache
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini:ro
+    depends_on:
+      - mariadb  # 의존성 변경 (mysql -> mariadb)
+      - redis
+    networks:
+      - ipx-network
+    restart: unless-stopped
+    working_dir: /var/www/html/apps/ipx-vr
+
+  # 3. Database (MariaDB 10.11 LTS) - Port 3307
+  mariadb:
+    image: mariadb:10.11
+    container_name: ipx-mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: st5300!@#   # Root 비밀번호
+      TZ: Asia/Seoul
+    ports:
+      - "3307:3306"                    # 호스트 3307 -> 컨테이너 3306 연결
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      # 초기화 SQL 스크립트 (데이터베이스 및 사용자 자동 생성)
+      - ./docker/mariadb/init:/docker-entrypoint-initdb.d
+    networks:
+      - ipx-network
+    restart: unless-stopped
+    command: 
+      - --character-set-server=utf8mb4 
+      - --collation-server=utf8mb4_unicode_ci
+
+  # 4. Cache & Queue (Redis)
+  redis:
+    image: redis:7-alpine
+    container_name: ipx-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ipx-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+networks:
+  ipx-network:
+    driver: bridge
+
+volumes:
+  mariadb_data:  # MariaDB 데이터 영구 저장소
+  ipx_vr_storage:   # Laravel storage 폴더 (권한 문제 해결)
+  ipx_vr_bootstrap_cache:  # Laravel bootstrap/cache 폴더 (권한 문제 해결)
+  redis_data:    # Redis 데이터 영구 저장소
