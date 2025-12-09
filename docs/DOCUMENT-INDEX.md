@@ -37,6 +37,7 @@
 | 문서 | 설명 | 우선순위 |
 | :-- | :-- | :-- |
 | [프로젝트 현황](system/project-status.md) | 전체 프로젝트 상태 요약 | ⭐⭐⭐ |
+| [다음 단계 작업 가이드](system/next-steps.md) | 다음 작업 계획 및 체크리스트 | ⭐⭐⭐ |
 | [Monorepo 전환 가이드](system/monorepo-migration.md) | Monorepo 구조 전환 상세 내용 | ⭐⭐ |
 | [프론트엔드 현황](system/frontend-status.md) | 프론트엔드 개발 상태 | ⭐⭐ |
 | [포트 구성](system/port-configuration.md) | 포트 매핑 정보 | ⭐⭐ |

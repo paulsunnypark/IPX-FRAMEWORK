@@ -28,6 +28,7 @@ IPX-Framework는 기존 레거시 시스템의 한계(동기식 처리, 스파�
 - 로그인 페이지 및 조회/청취 페이지 개발 완료
 - 브라우저 테스트 완료 (`http://localhost:8890`)
 - **Monorepo 구조 전환 완료** (`apps/ipx-vr/`)
+- **GitHub 저장소 초기화 완료** (`https://github.com/paulsunnypark/IPX-FRAMEWORK.git`)
 
 ### ⚠️ 다음 작업
 - 데모 데이터 통합 (Phase 1)
