@@ -82,4 +82,3 @@ apps/*/storage/app/temp/
 
 # 데모 데이터 임포트 시 생성될 수 있는 로그나 임시 파일
 import_logs/
-node_modules
